@@ -130,13 +130,13 @@ void loop() {
 }
 
 void levAntChannelEvent(ChannelEventResponse& msg, uintptr_t data) {
-    if (msg.getCode() == STATUS_EVENT_CHANNEL_CLOSED)
+    if (msg.getCode() == STATUS_EVENT_CHANNEL_CLOSED || msg.getCode() == STATUS_EVENT_RX_FAIL_GO_TO_SEARCH)
     {
-        Serial.println("channel closed - reconnect");
+        Serial.println("LEV connection lost - restart channel");
         lev.begin();
     }
-    Serial.print("levEvent:");
-    Serial.println(msg.getCode());
+    // Serial.print("levEvent:");
+    // Serial.println(msg.getCode());
 }
 
 void levBaseDataPageHandler(AntRxDataResponse& msg, uintptr_t data) {
@@ -243,8 +243,6 @@ void levCapabilities(LevCapabilities& msg, uintptr_t data) {
 }
 
 void manufacturersInformationDataPageHandler(ManufacturersInformation& msg, uintptr_t data) {
-    Serial.print("DataPage: ");
-    Serial.println(msg.getDataPageNumber());
     Serial.print("HW Revision: ");
     Serial.println(msg.getHWRevision());
     Serial.print("ManufacturerID: ");
