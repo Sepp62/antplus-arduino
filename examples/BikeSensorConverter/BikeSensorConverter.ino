@@ -135,6 +135,8 @@ void levAntChannelEvent(ChannelEventResponse& msg, uintptr_t data) {
         Serial.println("channel closed - reconnect");
         lev.begin();
     }
+    Serial.print("levEvent:");
+    Serial.println(msg.getCode());
 }
 
 void levBaseDataPageHandler(AntRxDataResponse& msg, uintptr_t data) {
@@ -252,8 +254,6 @@ void manufacturersInformationDataPageHandler(ManufacturersInformation& msg, uint
 }
 
 void productInformationDataPageHandler(ProductInformation& msg, uintptr_t data) {
-    Serial.print("DataPage: ");
-    Serial.println(msg.getDataPageNumber());
     Serial.print("SW Revision Supplemental: ");
     Serial.println(msg.getSWRevisionSupplemental());
     Serial.print("SW Revision Main: ");
@@ -274,7 +274,10 @@ void moxyCreateMsgHandler(MuscleOxygenBaseMainDataPageMsg& msg, uintptr_t data)
         _levData.changedValueMask &= ~(BATTERYSOC | SUPPORTLEVEL | PERCENTASSIST);
         _eventCnt++;
     }
-    msg.setCurrentSaturatedHemoglobinPercentage(_levData.batterySOC * 10 + _eventCnt % 2);                              // in 0.1 % (0 - 100)-- > 0 - 1000
+    if( _levData.batterySOC == 100 )
+        msg.setCurrentSaturatedHemoglobinPercentage( (_levData.batterySOC * 10 - 1 ) + _eventCnt % 2 );  // toggle between 100.0 and 99.9 
+    else
+        msg.setCurrentSaturatedHemoglobinPercentage(_levData.batterySOC * 10 + _eventCnt % 2);          // in 0.1 % (0 - 100)-- > 0 - 1000
     msg.setTotalHemoglobinConcentration(_levData.supportLevel * 100 + min(99, _levData.percentAssist)); // in 0.01g/dl (0-40) --> 0-4000
     msg.setEventCount(_eventCnt);
     Serial.println("new moxy values--------------");
