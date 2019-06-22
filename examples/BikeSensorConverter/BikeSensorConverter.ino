@@ -57,7 +57,7 @@ void printStatus(uint8_t status);
 
 // mask for changed values
 enum {
-    SPEED           = 1,
+    LEVSPEED        = 1,
     ODOMETER        = 2,
     BATTERYSOC      = 4,
     SUPPORTLEVEL    = 8,
@@ -149,7 +149,7 @@ void levBaseDataPageHandler(AntRxDataResponse& msg, uintptr_t data) {
 void levSpeedSystemInformation1Handler(LevSpeedSystemInformation1& msg, uintptr_t data) {
     _levData.speed = msg.getSpeed();
     _levData.supportLevel = decodeSupportLevel(msg.getTravelModeState());
-    _levData.changedValueMask |= SPEED | SUPPORTLEVEL;
+    _levData.changedValueMask |= LEVSPEED | SUPPORTLEVEL;
 
     Serial.print("Temperature state: ");
     Serial.println(msg.getTemperatureState());      // TODO enums for temperature state
@@ -170,7 +170,7 @@ void levSpeedSystemInformation1Handler(LevSpeedSystemInformation1& msg, uintptr_
 void levSpeedDistanceInformationHandler(LevSpeedDistanceInformation& msg, uintptr_t data) {
     _levData.odometer = msg.getOdometer();
     _levData.speed = msg.getSpeed();
-    _levData.changedValueMask |= SPEED | ODOMETER;
+    _levData.changedValueMask |= LEVSPEED | ODOMETER;
 
     Serial.print("Odometer: ");
     Serial.println((float)msg.getOdometer() / 100);
@@ -185,7 +185,7 @@ void levSpeedDistanceInformationHandler(LevSpeedDistanceInformation& msg, uintpt
 void levAltSpeedDistanceInformationHandler(LevAltSpeedDistanceInformation& msg, uintptr_t data) {
     _levData.odometer = msg.getOdometer();
     _levData.speed = msg.getSpeed();
-    _levData.changedValueMask |= SPEED | ODOMETER;
+    _levData.changedValueMask |= LEVSPEED | ODOMETER;
 
     Serial.print("Total dist: ");
     Serial.println((float)msg.getOdometer() / 100);
@@ -202,7 +202,7 @@ void levSpeedSystemInformation2Handler(LevSpeedSystemInformation2& msg, uintptr_
     _levData.supportLevel = decodeSupportLevel(msg.getTravelModeState());
     _levData.percentAssist = msg.getPercentAssist();
     _levData.speed = msg.getSpeed();
-    _levData.changedValueMask |= BATTERYSOC | SUPPORTLEVEL| PERCENTASSIST| SPEED;
+    _levData.changedValueMask |= BATTERYSOC | SUPPORTLEVEL| PERCENTASSIST| LEVSPEED;
 
     Serial.print("Battery SOC: ");
     Serial.println(msg.getBatterySOC());
